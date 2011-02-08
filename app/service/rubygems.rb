@@ -1,5 +1,6 @@
 require 'nokogiri'
 require 'open-uri'
+require 'service/service_unavailable_error'
 
 module Service
   module Rubygems
@@ -9,7 +10,12 @@ module Service
         [element.children.first.text.strip, element.at_css('em').text.strip]
       end
       Hash[gems]
+    rescue OpenURI::HTTPError => e
+      ex = ServiceUnavailableError.new(e.message)
+      ex.exception(e)
+      raise ex
     end
+    
     extend self
   end
 end

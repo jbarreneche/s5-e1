@@ -1,0 +1,1 @@
+class ServiceUnavailableError < StandardError; end
