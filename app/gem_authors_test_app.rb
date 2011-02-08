@@ -1,7 +1,7 @@
 require 'json'
-require 'inquirer'
+require 'gem_author'
 class GemAuthorsTestApp < Sinatra::Base
   get '/:author' do |author|
-    {author => "Yahoo!"}.to_json
+    GemAuthor.query(author).to_json
   end
 end
