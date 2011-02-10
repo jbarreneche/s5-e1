@@ -6,7 +6,7 @@ class GemAuthor < Struct.new(:author, :gems)
     gems = query_service.gems_for(author_name)
     new(author_name, gems)
   rescue ServiceUnavailableError => e
-    {}
+    nil
   end
   def initialize(author, gems)
     gems = gems.map {|gem_name, version| GemInfo.query(gem_name, version)}
