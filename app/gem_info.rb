@@ -1,4 +1,4 @@
-require 'service/gem_testers'
+require_relative 'service/gem_testers'
 
 class GemInfo < Struct.new(:gem_name, :version, :test_results)
   attr_reader 

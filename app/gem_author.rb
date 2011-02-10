@@ -1,5 +1,5 @@
-require 'gem_info'
-require 'service/rubygems'
+require_relative 'gem_info'
+require_relative 'service/rubygems'
 
 class GemAuthor < Struct.new(:author, :gems)
   def self.query(author_name, query_service = Service::Rubygems)

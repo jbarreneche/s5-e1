@@ -1,6 +1,6 @@
 require 'nokogiri'
 require 'open-uri'
-require 'service/service_unavailable_error'
+require_relative 'service_unavailable_error'
 
 module Service
   module Rubygems
