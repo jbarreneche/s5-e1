@@ -23,10 +23,18 @@ describe Service::Rubygems do
       stub_request(:get, Service::Rubygems[author])
         .to_return(:status => [500, "Internal Server Error"])
 
+      Service::Rubygems.gems_for(author).should be_nil
+    end
+
+    it 'bubles up anty other error' do
+      author = 'lucasefe'
+
+      stub_request(:get, Service::Rubygems[author])
+        .to_return(:status => [502, "Internal Server Error"])
+
       expect {
         Service::Rubygems.gems_for(author)
       }.to raise_error(ServiceUnavailableError)
-
     end
   end
 end

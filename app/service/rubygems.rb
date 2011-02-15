@@ -1,4 +1,4 @@
-require 'open-uri'
+require 'net/http'
 require 'nokogiri'
 
 require_relative 'service_unavailable_error'
@@ -6,23 +6,30 @@ require_relative 'service_unavailable_error'
 module Service
   module Rubygems
 
-    URL_PATTERN = "https://rubygems.org/profiles/%{author}"
+    URL_PATTERN = "http://rubygems.org/profiles/%{author}"
 
     def [](author)
       URL_PATTERN % {:author => author}
     end
 
     def gems_for(author)
+      
+      response = Net::HTTP.get_response URI.parse(self[author])
 
-      document = Nokogiri::HTML.parse open(self[author])
-      gems = extract_gems_from_document(document)
+      case response
+      when Net::HTTPSuccess
+        document = Nokogiri::HTML.parse response.read_body
 
-      return Hash[gems]
+        gems = extract_gems_from_document(document)
 
-    rescue OpenURI::HTTPError => e
-      ex = ServiceUnavailableError.new(e.message)
-      ex.exception(e)
-      raise ex
+        return Hash[gems]
+
+      when Net::HTTPInternalServerError
+        nil
+        
+      else
+        raise ServiceUnavailableError.new(self[author], "#{response.code} #{response.message}")
+      end
     end
 
     def extract_gems_from_document(document)

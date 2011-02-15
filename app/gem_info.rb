@@ -5,11 +5,7 @@ class GemInfo
   
   def self.query(gem_name, version, query_service = Service::GemTesters)
 
-    test_results = begin
-      query_service.test_information_for(gem_name, version)
-    rescue ServiceUnavailableError => e
-      []
-    end
+    test_results = query_service.test_information_for(gem_name, version)
 
     new(gem_name, version, test_results)
 

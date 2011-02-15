@@ -15,14 +15,13 @@ module Service
     def test_information_for(gem_name, version)
 
       url = self[gem_name, version]
+
       full_data = JSON.parse open(url).read
       
       extract_test_results(full_data)
     
-    rescue OpenURI::HTTPError => e
-      ex = ServiceUnavailableError.new(e.message)
-      ex.exception(e)
-      raise ex
+    rescue OpenURI::HTTPError => exc
+      raise ServiceUnavailableError.new(url, exc.message)
     end
 
     def extract_test_results(full_data)
