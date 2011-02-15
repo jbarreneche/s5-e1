@@ -5,7 +5,10 @@ class GemAuthor
   attr_accessor :author, :gems
   
   def self.query(author_name, query_service = Service::Rubygems)
-    new(author_name, query_service.gems_for(author_name))
+
+    gems = query_service.gems_for(author_name)
+    return new(author_name, gems)
+
   rescue ServiceUnavailableError => e
     nil
   end

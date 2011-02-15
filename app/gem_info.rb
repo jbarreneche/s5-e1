@@ -4,11 +4,15 @@ class GemInfo
   attr_accessor :gem_name, :version, :test_results
   
   def self.query(gem_name, version, query_service = Service::GemTesters)
-    result = query_service.test_information_for(gem_name, version)
-    
-    test_results = result['version']['test_results'] if result['version']
 
-    new(gem_name, version, test_results || [])
+    test_results = begin
+      query_service.test_information_for(gem_name, version)
+    rescue ServiceUnavailableError => e
+      []
+    end
+
+    new(gem_name, version, test_results)
+
   end
   
   def initialize(gem_name, version, test_results)
