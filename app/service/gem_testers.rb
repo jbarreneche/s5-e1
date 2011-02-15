@@ -1,8 +1,11 @@
 require 'open-uri'
 require 'json'
 
+require_relative 'service_unavailable_error'
+
 module Service
   module GemTesters
+
     URL_PATTERN = "http://gem-testers.org/gems/%{gem_name}/v/%{version}.json"
 
     def [](gem_name, version)
@@ -10,10 +13,27 @@ module Service
     end
 
     def test_information_for(gem_name, version)
-      url = URI.parse self[gem_name, version]
-      JSON.parse Net::HTTP.get(url)
+
+      url = self[gem_name, version]
+      full_data = JSON.parse open(url).read
+      
+      extract_test_results(full_data)
+    
+    rescue OpenURI::HTTPError => e
+      ex = ServiceUnavailableError.new(e.message)
+      ex.exception(e)
+      raise ex
+    end
+
+    def extract_test_results(full_data)
+      if full_data['version']
+        full_data['version']['test_results'] 
+      else
+        {}
+      end
     end
 
     extend self
+
   end
 end
